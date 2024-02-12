@@ -6,10 +6,7 @@ Transformer classes have a .transform() method that takes a DataFrame and return
 
 Estimator classes all implement a .fit() method. These methods also take a DataFrame, but instead of returning another DataFrame they return a model object. This can be something like a StringIndexerModel for including categorical data saved as strings in your models, or a RandomForestModel that uses the random forest algorithm for classification or regression.
 
-## Join the Dataframes
-
-
-### Exercise
+## Exercise: Join the Dataframes
 
 * First, rename the year column of planes to plane_year to avoid duplicate column names.
 * Create a new DataFrame called model_data by joining the flights table with planes using the tailnum column as the key.
@@ -34,15 +31,13 @@ The only argument you need to pass to .cast() is the kind of value you want to c
 
 You can put this call to .cast() inside a call to .withColumn() to overwrite the already existing column, just like you did in the previous chapter!
 
-## String to integer
+## Exercise: String to integer
 
 To convert the type of a column using the .cast() method, you can write code like this:
 
 ```
 dataframe = dataframe.withColumn("col", dataframe.col.cast("new_type"))
 ```
-
-### Exercise
 
 * Use the method .withColumn() to .cast() the following columns to type "integer". Access the columns using the df.col notation:
     * model_data.arr_delay
@@ -58,9 +53,7 @@ model_data = model_data.withColumn("month", model_data.month.cast("integer"))
 model_data = model_data.withColumn("plane_year", model_data.plane_year.cast("integer"))
 ```
 
-## Create a new column
-
-### Exercise
+## Exercise: Create a new column
 
 * Create the column plane_age using the .withColumn() method and subtracting the year of manufacture (column plane_year) from the year (column year) of the flight.
 
@@ -69,9 +62,7 @@ model_data = model_data.withColumn("plane_year", model_data.plane_year.cast("int
 model_data = model_data.withColumn("plane_age", model_data.year - model_data.plane_year)
 ```
 
-## Making a Boolean
-
-### Exercise
+## Exercise: Making a Boolean
 
 * Use the .withColumn() method to create the column is_late. This column is equal to model_data.arr_delay > 0.
 * Convert this column to an integer column so that you can use it in your model and name it label (this is the default name for the response variable in Spark's machine learning routines).
@@ -100,13 +91,11 @@ The first step to encoding your categorical feature is to create a StringIndexer
 
 The second step is to encode this numeric column as a one-hot vector using a OneHotEncoder. This works exactly the same way as the StringIndexer by creating an Estimator and then a Transformer. The end result is a column that encodes your categorical feature as a vector that's suitable for machine learning routines!
 
-## Carrier
+## Exercise: Carrier
 
 Create a StringIndexer and a OneHotEncoder to code the carrier column. To do this, you'll call the class constructors with the arguments inputCol and outputCol.
 
 The inputCol is the name of the column you want to index or encode, and the outputCol is the name of the new column that the Transformer should create.
-
-### Exercise
 
 * Create a StringIndexer called carr_indexer by calling StringIndexer() with inputCol="carrier" and outputCol="carrier_index".
 * Create a OneHotEncoder called carr_encoder by calling OneHotEncoder() with inputCol="carrier_index" and outputCol="carrier_fact".
@@ -119,9 +108,7 @@ carr_indexer = StringIndexer(inputCol="carrier", outputCol="carrier_index" )
 carr_encoder = OneHotEncoder(inputCol="carrier_index", outputCol="carrier_fact")
 ```
 
-## Destination
-
-### Exercise
+## Exercise: Destination
 
 * Create a StringIndexer called dest_indexer by calling StringIndexer() with inputCol="dest" and outputCol="dest_index".
 * Create a OneHotEncoder called dest_encoder by calling OneHotEncoder() with inputCol="dest_index" and outputCol="dest_fact".
@@ -134,13 +121,11 @@ dest_indexer = StringIndexer(inputCol="dest", outputCol="dest_index" )
 dest_encoder = OneHotEncoder(inputCol="dest_index", outputCol="dest_fact")
 ```
 
-## Assemble a vector
+## Exercise: Assemble a vector
 
 The last step in the Pipeline is to combine all of the columns containing our features into a single column. This has to be done before modeling can take place because every Spark modeling routine expects the data to be in this form. You can do this by storing each of the values from a column as an entry in a vector. Then, from the model's point of view, every observation is a vector that contains all of the information about it and a label that tells the modeler what value that observation corresponds to.
 
 Because of this, the pyspark.ml.feature submodule contains a class called VectorAssembler. This Transformer takes all of the columns you specify and combines them into a new vector column.
-
-### Exercise
 
 * Create a VectorAssembler by calling VectorAssembler() with the inputCols names as a list and the outputCol name "features".
     * The list of columns should be ["month", "air_time", "carrier_fact", "dest_fact", "plane_age"]
@@ -150,11 +135,9 @@ Because of this, the pyspark.ml.feature submodule contains a class called Vector
 vec_assembler = VectorAssembler(inputCols=["month", "air_time", "carrier_fact", "dest_fact", "plane_age"], outputCol="features")
 ```
 
-## Create the pipeline
+## Exercise: Create the pipeline
 
 Pipeline is a class in the pyspark.ml module that combines all the Estimators and Transformers that you've already created. This lets you reuse the same modeling process over and over again by wrapping it up in one simple object. 
-
-### Exercise
 
 * Import Pipeline from pyspark.ml.
 * Call the Pipeline() constructor with the keyword argument stages to create a Pipeline called flights_pipe.
@@ -171,8 +154,8 @@ flights_pipe = Pipeline(stages=[dest_indexer, dest_encoder, carr_indexer, carr_e
 
 In Spark it's important to make sure you split the data after all the transformations. This is because operations like StringIndexer don't always produce the same index even when given the same list of strings.
 
-## Transform the data
-### Exercise
+## Exercise: Transform the data
+
 * Create the DataFrame piped_data by calling the Pipeline methods .fit() and .transform() in a chain. Both of these methods take model_data as their only argument.
 
 ```
@@ -180,8 +163,8 @@ In Spark it's important to make sure you split the data after all the transforma
 piped_data = flights_pipe.fit(model_data).transform(model_data)
 ```
 
-## Split the data
-### Exercise
+## Exercise: Split the data
+
 Use the DataFrame method .randomSplit() to split piped_data into two pieces, training with 60% of the data, and test with 40% of the data by passing the list [.6, .4] to the .randomSplit() method.
 
 ```

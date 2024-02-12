@@ -8,11 +8,9 @@ To use this as a classification algorithm, all you have to do is assign a cutoff
 
 You'll tune this model by testing different values for several hyperparameters. A hyperparameter is just a value in the model that's not estimated from the data, but rather is supplied by the user to maximize performance. 
 
-## Create the modeler
+## Exercise: Create the modeler
 
 The Estimator you'll be using is a LogisticRegression from the pyspark.ml.classification submodule.
-
-### Exercise
 
 * Import the LogisticRegression class from pyspark.ml.classification.
 * Create a LogisticRegression called lr by calling LogisticRegression() with no arguments.
@@ -34,13 +32,11 @@ It works by splitting the training data into a few different partitions. The exa
 
 You'll be using cross validation to choose the hyperparameters by creating a grid of the possible pairs of values for the two hyperparameters, elasticNetParam and regParam, and using the cross validation error to compare all the different models so you can choose the best one!
 
-## Create the evaluator
+## Exercise: Create the evaluator
 
 The pyspark.ml.evaluation submodule has classes for evaluating different kinds of models. Your model is a binary classification model, so you'll be using the BinaryClassificationEvaluator from the pyspark.ml.evaluation module.
 
 This evaluator calculates the area under the ROC. This is a metric that combines the two kinds of errors a binary classifier can make (false positives and false negatives) into a simple number.
-
-### Exercise
 
 * Import the submodule pyspark.ml.evaluation as evals.
 * Create evaluator by calling evals.BinaryClassificationEvaluator() with the argument metricName="areaUnderROC".
@@ -53,15 +49,11 @@ import pyspark.ml.evaluation as evals
 evaluator = evals.BinaryClassificationEvaluator(metricName="areaUnderROC")
 ```
 
-## Make a grid
-
+## Exercise: Make a grid
 
 Create a grid of values to search over when looking for the optimal hyperparameters. The submodule pyspark.ml.tuning includes a class called ParamGridBuilder that does just that (maybe you're starting to notice a pattern here; PySpark has a submodule for just about everything!).
 
 You'll need to use the .addGrid() and .build() methods to create a grid that you can use for cross validation. The .addGrid() method takes a model parameter and a list of values that you want to try. The .build() method takes no arguments, it just returns the grid that you'll use later.
-
-
-### Exercise
 
 * Import the submodule pyspark.ml.tuning under the alias tune.
 * Call the class constructor ParamGridBuilder() with no arguments. Save this as grid.
@@ -84,11 +76,9 @@ grid = grid.addGrid(lr.elasticNetParam, [0, 1])
 grid = grid.build()
 ```
 
-## Make the validator
+## Exercise: Make the validator
 
 The submodule pyspark.ml.tuning also has a class called CrossValidator for performing cross validation. This Estimator takes the modeler you want to fit, the grid of hyperparameters you created, and the evaluator you want to use to compare your models.
-
-### Exercise
 
 * Create a CrossValidator by calling tune.CrossValidator() with the arguments:
 estimator=lr
@@ -104,7 +94,7 @@ cv = tune.CrossValidator(estimator=lr,
                )
 ```
 
-## Fit the model(s)
+## Exercise: Fit the model(s)
 
 ```
 # Fit cross validation models
@@ -113,8 +103,6 @@ models = cv.fit(training)
 # Extract the best model
 best_lr = models.bestModel
 ```
-
-### Exercise
 
 * Create best_lr by calling lr.fit() on the training data.
 * Print best_lr to verify that it's an object of the LogisticRegressionModel class.

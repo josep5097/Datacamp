@@ -1,6 +1,6 @@
 # Manipulating Data
 
-## Creating columns
+## Exercise: Creating columns
 
 In this chapter, you'll learn how to use the methods defined by Spark's DataFrame class to perform common data operations.
 
